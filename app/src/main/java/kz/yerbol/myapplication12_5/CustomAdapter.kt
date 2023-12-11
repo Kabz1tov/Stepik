@@ -6,11 +6,26 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.SmoothScroller
 import com.google.android.material.textfield.TextInputLayout
 
-class CustomAdapter(private val items: List<ListItem>) :
+
+class CustomAdapter(private var items: MutableList<ListItem>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private lateinit var mRecyclerView: RecyclerView
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        mRecyclerView = recyclerView
+    }
+
+    private fun scrollToPosition(position: Int) {
+        //.startSmoothScroll()
+        mRecyclerView.scrollToPosition(position)
+    }
 
     inner class CurrencyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(item: ListItem.CurrencyItem) {
@@ -27,9 +42,16 @@ class CustomAdapter(private val items: List<ListItem>) :
     inner class ButtonViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(item: ListItem.ButtonItem) {
             val btnAdd: Button = itemView.findViewById(R.id.btn_add)
-
             btnAdd.text = item.name
+            btnAdd.setOnClickListener { addCurrencyItem() }
         }
+    }
+
+    private fun addCurrencyItem() {
+        val newItemPosition = items.size - 1
+        items.add(newItemPosition, ListItem.CurrencyItem(1, (0..123456).random(), "Лира, Турция"))
+        notifyItemInserted(newItemPosition)
+        scrollToPosition(newItemPosition)
     }
 
     override fun getItemViewType(position: Int): Int {
