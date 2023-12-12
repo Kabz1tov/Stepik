@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:title="Сортировать по"
+        app:showAsAction="never">
+
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/menu_order_asc"
+                    android:title="Алфавиту"
+                    app:showAsAction="never" />
+
+                <item
+                    android:id="@+id/menu_order_sum"
+                    android:title="Стоимости"
+                    app:showAsAction="never" />
+            </group>
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/menu_order_reset"
+        android:title="Сбросить сортировку"
+        app:showAsAction="never" />
+</menu>

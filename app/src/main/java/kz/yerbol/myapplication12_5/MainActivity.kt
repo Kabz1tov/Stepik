@@ -1,19 +1,25 @@
 package kz.yerbol.myapplication12_5
 
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.RadioGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.DOWN
-import androidx.recyclerview.widget.ItemTouchHelper.END
 import androidx.recyclerview.widget.ItemTouchHelper.LEFT
 import androidx.recyclerview.widget.ItemTouchHelper.RIGHT
-import androidx.recyclerview.widget.ItemTouchHelper.START
 import androidx.recyclerview.widget.ItemTouchHelper.UP
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Collections
 
+
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var customAdapter: CustomAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -36,8 +42,9 @@ class MainActivity : AppCompatActivity() {
         )
 
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = CustomAdapter(list)
 
+        customAdapter = CustomAdapter(list)
+        recyclerView.adapter = customAdapter
 
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(UP or DOWN, LEFT or RIGHT) {
             override fun onMove(
@@ -47,9 +54,20 @@ class MainActivity : AppCompatActivity() {
             ): Boolean {
                 val fromPosition = viewHolder.adapterPosition
                 val toPosition = target.adapterPosition
-                Collections.swap(list, fromPosition, toPosition)
 
-                recyclerView.adapter?.notifyItemMoved(fromPosition,toPosition)
+                if (fromPosition < toPosition) {
+                    for (i in fromPosition until toPosition) {
+                        Collections.swap(list, i, i + 1)
+                    }
+                } else {
+                    for (i in fromPosition downTo toPosition + 1) {
+                        Collections.swap(list, i, i - 1)
+                    }
+                }
+
+//                Collections.swap(list, fromPosition, toPosition)
+
+                recyclerView.adapter?.notifyItemMoved(fromPosition, toPosition)
                 return false
             }
 
@@ -58,5 +76,35 @@ class MainActivity : AppCompatActivity() {
                 (recyclerView.adapter as CustomAdapter).notifyItemRemoved(viewHolder.adapterPosition)
             }
         }).attachToRecyclerView(recyclerView)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_order_asc -> {
+                customAdapter.sortItemsAsc()
+
+                item.setChecked(true);
+                true
+            }
+
+            R.id.menu_order_sum -> {
+                customAdapter.sortItemsSum()
+
+                item.setChecked(true);
+                true
+            }
+
+            R.id.menu_order_reset -> {
+                customAdapter.sortReset()
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }

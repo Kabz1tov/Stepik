@@ -16,6 +16,7 @@ class CustomAdapter(private var items: MutableList<ListItem>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private lateinit var mRecyclerView: RecyclerView
+    private var itemsInitial = items
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
@@ -52,6 +53,8 @@ class CustomAdapter(private var items: MutableList<ListItem>) :
         items.add(newItemPosition, ListItem.CurrencyItem(1, (0..123456).random(), "Лира, Турция"))
         notifyItemInserted(newItemPosition)
         scrollToPosition(newItemPosition)
+
+        itemsInitial = items
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -85,4 +88,33 @@ class CustomAdapter(private var items: MutableList<ListItem>) :
     }
 
     override fun getItemCount() = items.size
+
+    fun sortItemsAsc() {
+        var listWOButton: List<ListItem.CurrencyItem> =
+            items.filterIsInstance<ListItem.CurrencyItem>()
+
+        listWOButton = listWOButton.sortedBy { it.name }
+
+        val listWithButton = listWOButton + ListItem.ButtonItem("Добавить")
+
+        items = listWithButton.toMutableList()
+        notifyDataSetChanged()
+    }
+
+    fun sortItemsSum() {
+        var listWOButton: List<ListItem.CurrencyItem> =
+            items.filterIsInstance<ListItem.CurrencyItem>()
+
+        listWOButton = listWOButton.sortedBy { it.sum }
+
+        val listWithButton = listWOButton + ListItem.ButtonItem("Добавить")
+
+        items = listWithButton.toMutableList()
+        notifyDataSetChanged()
+    }
+
+    fun sortReset() {
+        items = itemsInitial
+        notifyDataSetChanged()
+    }
 }
