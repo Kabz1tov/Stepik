@@ -19,6 +19,7 @@ import java.util.Collections
 class MainActivity : AppCompatActivity() {
 
     private lateinit var customAdapter: CustomAdapter
+    private lateinit var menu: Menu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,43 +44,44 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        customAdapter = CustomAdapter(list)
+        customAdapter = CustomAdapter(list, this)
         recyclerView.adapter = customAdapter
 
-        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(UP or DOWN, LEFT or RIGHT) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                val fromPosition = viewHolder.adapterPosition
-                val toPosition = target.adapterPosition
+        /*        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(UP or DOWN, LEFT or RIGHT) {
+                    override fun onMove(
+                        recyclerView: RecyclerView,
+                        viewHolder: RecyclerView.ViewHolder,
+                        target: RecyclerView.ViewHolder
+                    ): Boolean {
+                        val fromPosition = viewHolder.adapterPosition
+                        val toPosition = target.adapterPosition
 
-                if (fromPosition < toPosition) {
-                    for (i in fromPosition until toPosition) {
-                        Collections.swap(list, i, i + 1)
+                        if (fromPosition < toPosition) {
+                            for (i in fromPosition until toPosition) {
+                                Collections.swap(list, i, i + 1)
+                            }
+                        } else {
+                            for (i in fromPosition downTo toPosition + 1) {
+                                Collections.swap(list, i, i - 1)
+                            }
+                        }
+
+        //                Collections.swap(list, fromPosition, toPosition)
+
+                        recyclerView.adapter?.notifyItemMoved(fromPosition, toPosition)
+                        return false
                     }
-                } else {
-                    for (i in fromPosition downTo toPosition + 1) {
-                        Collections.swap(list, i, i - 1)
+
+                    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                        list.removeAt(viewHolder.adapterPosition)
+                        (recyclerView.adapter as CustomAdapter).notifyItemRemoved(viewHolder.adapterPosition)
                     }
-                }
-
-//                Collections.swap(list, fromPosition, toPosition)
-
-                recyclerView.adapter?.notifyItemMoved(fromPosition, toPosition)
-                return false
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                list.removeAt(viewHolder.adapterPosition)
-                (recyclerView.adapter as CustomAdapter).notifyItemRemoved(viewHolder.adapterPosition)
-            }
-        }).attachToRecyclerView(recyclerView)
+                }).attachToRecyclerView(recyclerView)*/
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
+        this.menu = menu
         return true
     }
 
@@ -106,5 +108,11 @@ class MainActivity : AppCompatActivity() {
 
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    fun onItemLongClick(itemPosition: Int) {
+        this.title = "Item selected ${itemPosition + 1}"
+        val menuItem: MenuItem = menu.findItem(R.id.menu_delete)
+        menuItem.isVisible = true
     }
 }

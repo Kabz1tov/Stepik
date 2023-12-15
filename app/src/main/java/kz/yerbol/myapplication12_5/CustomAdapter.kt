@@ -1,18 +1,17 @@
 package kz.yerbol.myapplication12_5
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.SmoothScroller
 import com.google.android.material.textfield.TextInputLayout
 
 
-class CustomAdapter(private var items: MutableList<ListItem>) :
+class CustomAdapter(private var items: MutableList<ListItem>, mContext: Context) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private lateinit var mRecyclerView: RecyclerView
@@ -29,6 +28,7 @@ class CustomAdapter(private var items: MutableList<ListItem>) :
     }
 
     inner class CurrencyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
         fun bind(item: ListItem.CurrencyItem) {
             val tilName: TextInputLayout = itemView.findViewById(R.id.til)
             val etSum: EditText = itemView.findViewById(R.id.et_sum)
@@ -37,6 +37,13 @@ class CustomAdapter(private var items: MutableList<ListItem>) :
             tilName.hint = item.name
             etSum.setText(item.sum.toString())
             tvName.text = item.name
+
+
+            itemView.setOnLongClickListener {
+                val p = layoutPosition
+                (it.context as MainActivity).onItemLongClick(p)
+                true // returning true instead of false, works for me
+            }
         }
     }
 
