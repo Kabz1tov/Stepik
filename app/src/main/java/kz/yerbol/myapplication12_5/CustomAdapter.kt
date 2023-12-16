@@ -1,6 +1,7 @@
 package kz.yerbol.myapplication12_5
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,8 @@ class CustomAdapter(private var items: MutableList<ListItem>, mContext: Context)
 
     private lateinit var mRecyclerView: RecyclerView
     private var itemsInitial = items
+    private var lastCheckedItemView: View? = null
+    private var lastCheckItemPos: Int? = null
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
@@ -40,9 +43,14 @@ class CustomAdapter(private var items: MutableList<ListItem>, mContext: Context)
 
 
             itemView.setOnLongClickListener {
+                resetCheckedItemState()
+
                 val p = layoutPosition
+                lastCheckItemPos = p
+                lastCheckedItemView = it
+                it.setBackgroundColor(Color.BLUE)
                 (it.context as MainActivity).onItemLongClick(p)
-                true // returning true instead of false, works for me
+                true
             }
         }
     }
@@ -123,5 +131,16 @@ class CustomAdapter(private var items: MutableList<ListItem>, mContext: Context)
     fun sortReset() {
         items = itemsInitial
         notifyDataSetChanged()
+    }
+
+    fun resetCheckedItemState() {
+        lastCheckedItemView?.setBackgroundColor(Color.TRANSPARENT)
+        lastCheckItemPos = null
+    }
+
+    fun deleteCheckedItem() {
+        lastCheckItemPos?.let { items.removeAt(it) }
+        notifyDataSetChanged()
+
     }
 }

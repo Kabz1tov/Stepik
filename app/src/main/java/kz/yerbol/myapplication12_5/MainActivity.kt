@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.RadioGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.DOWN
@@ -87,6 +88,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                true
+            }
+
+            R.id.menu_delete -> {
+                FirstDialogFragment(customAdapter).show(supportFragmentManager, null)
+                true
+            }
+
             R.id.menu_order_asc -> {
                 customAdapter.sortItemsAsc()
 
@@ -111,8 +122,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onItemLongClick(itemPosition: Int) {
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         this.title = "Item selected ${itemPosition + 1}"
         val menuItem: MenuItem = menu.findItem(R.id.menu_delete)
         menuItem.isVisible = true
+    }
+
+    override fun onBackPressed() {
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        this.title = getString(R.string.app_name)
+        val menuItem: MenuItem = menu.findItem(R.id.menu_delete)
+        menuItem.isVisible = false
+        customAdapter.resetCheckedItemState()
+    }
+
+    fun deleteItem() {
+        customAdapter.deleteCheckedItem()
     }
 }
